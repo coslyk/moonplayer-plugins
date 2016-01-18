@@ -3,7 +3,7 @@
 
 import re
 import json
-from utils import convert_to_utf8, list_links
+from moonplayer_utils import convert_to_utf8, list_links
 import moonplayer
 
 ## hosts
