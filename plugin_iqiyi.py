@@ -14,19 +14,9 @@ hosts = ('www.iqiyi.com',)
     
 ## parse
 def parse(url, options):
-    if url.startswith('http://www.iqiyi.com/a_'):
-        moonplayer.get_url(url, parse_a_cb, None)
-    elif url.startswith('http://www.iqiyi.com/lib/m_'):
-        moonplayer.get_url(url, parse_tv_cb, None)
-    elif url.startswith('http://www.iqiyi.com/v_') or \
-    url.startswith('http://www.iqiyi.com/w_') or \
-    url.startswith('http://www.iqiyi.com/dianshiju/') or \
-    url.startswith('http://www.iqiyi.com/dianying/'):
-        parser.feed(url, options)
-    else:
-        moonplayer.warn('Wrong URL!')
+    parser.feed(url, options)
 
-vid_re = re.compile(r'data-player-videoid="(.+?)"')
+vid_re = re.compile(r'''data-player-videoid=['"](.+?)['"]''')
 tvid_re = re.compile(r'tvId:\s?(\d+),')
 name_re = re.compile(r'''tvName:\s?['"](.+?)['"]''')
 
@@ -94,7 +84,7 @@ class Parser(object):
                 "&authkey="+hashlib.new('md5', hashlib.new('md5', '').hexdigest()+str(tm)+tvid).hexdigest()
             moonplayer.get_url(url, self.parse_vms, options)
         else:
-            moonplayer.warn('Fail!')
+            moonplayer.warn('[iqiyi] Cannot get the video id!')
             
     def parse_vms(self, content, options):
         info = json.loads(content)
@@ -117,7 +107,7 @@ class Parser(object):
         # Select quality
         if options & moonplayer.OPT_QL_1080P:
             q = 4
-        if options & moonplayer.OPT_QL_SUPER:
+        elif options & moonplayer.OPT_QL_SUPER:
             q = 3
         elif options & moonplayer.OPT_QL_HIGH:
             q = 2
