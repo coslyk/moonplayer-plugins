@@ -13,7 +13,7 @@ Windows: Save them under "plugins" folder.
 
 Supported websites
 ----
-* 搜狐电视剧 (res_sohu_tv.py)
+* Sohu TV [(res_sohu_tv.py)](https://github.com/coslyk/moonplayer-plugins/raw/master/res_sohu_tv.py)
 
 MoonPlayer的插件
 ==========
@@ -30,4 +30,6 @@ Windows: 保存在MoonPlayer安装目录下的plugins文件夹下
 
 已支持网站
 ----
-* 搜狐电视剧 (res_sohu_tv.py)
+* 搜狐电视剧 [(res_sohu_tv.py)](https://github.com/coslyk/moonplayer-plugins/raw/master/res_sohu_tv.py)
+
+<img src=https://github.com/coslyk/moonplayer-plugins/raw/master/screenshot.png />
