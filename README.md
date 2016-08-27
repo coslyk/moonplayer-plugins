@@ -15,6 +15,8 @@ Supported websites
 ----
 * Sohu TV [(res_sohu_tv.py)](https://github.com/coslyk/moonplayer-plugins/raw/master/res_sohu_tv.py)
 
+***
+
 MoonPlayer的插件
 ==========
 提供给MoonPlayer使用的插件。
