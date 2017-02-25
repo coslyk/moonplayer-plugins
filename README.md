@@ -40,7 +40,7 @@ MoonPlayer的插件
 
 对于开发者
 ----
-你可以轻松地为MoonPlayer编写插件。请参阅 [插件编写指南](https://github.com/coslyk/moonplayer-plugins/wiki/PluginsTutorial) 和 [API Reference](https://github.com/coslyk/moonplayer-plugins/wiki/API-Reference)。
+你可以轻松地为MoonPlayer编写插件。请参阅 [插件编写指南](https://github.com/coslyk/moonplayer-plugins/wiki/PluginsTutorialZH) 和 [API Reference](https://github.com/coslyk/moonplayer-plugins/wiki/API-Reference)。
 
 
 
