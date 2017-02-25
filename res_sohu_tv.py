@@ -3,6 +3,7 @@
 
 import moonplayer
 import re
+import json
 from moonplayer_utils import list_links
 
 res_name = '电视剧 - 搜狐'
@@ -17,92 +18,79 @@ tags_table = {'全部': '',    '偶像': '101100', '家庭': '101101', '历史':
 tags = ['全部', '偶像', '家庭', '历史', '年代', '言情', '武侠', '古装', '都市', '农村',
               '军旅', '刑侦', '喜剧', '悬疑', '情景', '传记', '科幻', '动画', '动作', '真人',
               '栏目', '谍战', '伦理', '战争', '神话', '惊悚', '剧情']
+countries_table = {'全部': '', '内地': '5', '香港': '6', '台湾': '7', '韩国': '8',
+                          '美国': '9', '英国': '10', '泰国': '11', '日本': '15', '其他': '100'}
+countries = ['全部', '内地', '香港', '台湾', '韩国', '美国', '英国', '泰国', '日本', '其它']
 
-countries_table = {'全部': '', '内地': '1000', '香港': '1001', '台湾': '1002', '美国': '1003',
-                          '日本': '1004', '韩国': '1015', '英国': '1007', '泰国': '1006', '其他': '1014'}
-countries = ['全部', '内地', '香港', '台湾', '美国', '日本', '韩国', '英国', '泰国', '其它']
+
+sohu_apikey = '1820c56b9d16bbe3381766192e134811' # caught from sohu's uwp client
+sohu_partner = 419
+
 
 def explore(tag, country, page):
     tag_id = tags_table[tag]
     country_id = countries_table[country]
-    url = 'http://so.tv.sohu.com/list_p1101_p2%s_p3%s_p40_p5_p6_p77_p80_p9_2d1_p10%i_p11_p12_p13.html' % \
-           (tag_id, country_id, page)
+    if page == 1:
+        url = 'http://api.tv.sohu.com/v6/mobile/classificationScreening/list.json?sub_channel_id=1010000&cid=2&cursor=0&page_size=10&ugc=1&plat=12&sver=3.7.0&partner=419&api_key=%s&o=1&cat=%s&area=%s&year=' % \
+           (sohu_apikey, tag_id, country_id)
+    else:
+        url = '%soffset=%i&page_size=20&ugc=1&plat=12&sver=3.7.0&partner=419&api_key=%s' % (sohu_more_list, sohu_offset + (page-2)*20, sohu_apikey)
     moonplayer.download_page(url, explore_cb, None)
-    
-img_re = re.compile(r'''<a\s[^>]*?href=['"](http://tv.sohu.com/item/.+?)['"][^>]*?>\s*<img\s[^>]*?src=['"](.+?)['"]''')
+
 def explore_cb(page, data):
-    #page = page.replace('\n', '')
-    dict_url_img = {}
-    match = img_re.search(page)
-    while match:
-        url, img = match.group(1, 2)
-        dict_url_img[url] = img
-        match = img_re.search(page, match.end(0))
-    result = list_links(page, 'http://tv.sohu.com/item/')
-    items = []
-    for i in xrange(0, len(result), 2):
-        name = result[i]
-        url = result[i+1]
-        pic_url = dict_url_img[url]
-        item = {'name': name, 'url': url, 'pic_url': pic_url}
-        items.append(item)
-    moonplayer.res_show(items)
+    global sohu_cached_info
+    global sohu_more_list
+    global sohu_offset
+    data = json.loads(page)['data']
+    try: # first page
+        data_list = data['columns'][0]['data_list']
+        sohu_offset = len(data_list)
+        sohu_more_list = data['columns'][0]['more_list']
+    except KeyError: # not first page
+        data_list = data['videos']
+    sohu_cached_info = {str(i['aid']): i for i in data_list}
+    result = [{'name': i['album_name'], 'url': str(i['aid']), 'pic_url': i['ver_big_pic']} for i in data_list]
+    moonplayer.res_show(result)
+
+
 
 def search(key, page):
-    url = 'http://so.tv.sohu.com/mts?box=1&wd=' + key
+    key = key.replace(' ', '+')
+    url = 'http://m.so.tv.sohu.com/search/keyword?key=%s&page=%i&page_size=30&pay=1&pgc=1&plat=12&sver=3.7.0&partner=419&api_key=%s' % (key, page, sohu_apikey)
     moonplayer.download_page(url, search_cb, None)
+
+def search_cb(content, data):
+    global sohu_cached_info
+    items = json.loads(content)['data']['items']
+    albums = []
+    for i in items:
+        if 'aid' in i and 'is_album' in i and i['is_album'] == 1:
+            albums.append(i)
+    sohu_cached_info = {str(i['aid']): i for i in albums}
+    result = [{'name': i['album_name'], 'url': str(i['aid']), 'pic_url': i['ver_big_pic']} for i in albums]
+    moonplayer.res_show(result)
+
     
-search_cb = explore_cb
+def load_item(aid):
+    info = sohu_cached_info[aid]
+    result = {
+        'name':      info['album_name'],
+        'summary':   info['album_desc'] if 'album_desc' in info else info['desc'] if 'desc' in info else '',
+        'rating':    info['score'] if 'score' in info else '',
+        'image':     info['ver_high_pic'],
+        'nations':   info['area'].split(',') if 'area' in info else '',
+        'directors': info['director'].split(',') if 'director' in info else '',
+        'players':   info['main_actor'].split(',') if 'main_actor' in info else ''
+    }
+    url = 'http://s1.api.tv.itc.cn/v4/album/videos/%s.json?page=1&page_size=500&site=1&plat=12&sver=3.7.0&partner=419&api_key=%s' % (aid, sohu_apikey)
+    moonplayer.download_page(url, load_item_cb, result)
     
-def load_item(url):
-    moonplayer.download_page(url, load_item_cb, None)
-    
-pic_re = re.compile(r'''<img src=['"](.+?)['"]''')
-name_re = re.compile(r'''<span class=['"]vname['"]>(.+?)</span>''')
-name_re2 = re.compile(r'''电影：(.+?)<span>''')
-date_re = re.compile(r'''<span>上映时间：</span>(.+?)</li>''')
-alt_name_re = re.compile(r'''<span>别名：</span>(.+?)</li>''')
-director_re = re.compile(r'''<span>导演：</span><a href=['"].+?['"][^>]*?>(.+?)</a>''')
-nation_re = re.compile(r'''<span>地区：</span><a href=['"].+?['"][^>]*?>(.+?)</a>''')
-rating_re = re.compile(r'''<strong class=['"]score['"]>(.+?)</strong>''')
-summary_re = re.compile(r'''<span class=['"]full_intro\s*['"][^>]*>(.+?)</span>''')
-def load_item_cb(page, data):
-    result = {}
-    # Picture
-    try:
-        match = pic_re.search(page.split('drama-pic')[1])
-    except IndexError:
-        match = pic_re.search(page.split('movie-pic')[1])
-    if match:
-        result['image'] = match.group(1)
-    # Name
-    match = name_re.search(page)
-    if match:
-        result['name'] = match.group(1)
-    # Rating
-    match = rating_re.search(page)
-    if match:
-        result['rating'] = float(match.group(1))
-    # Nation / Region
-    match = nation_re.search(page)
-    if match:
-        result['nations'] = [match.group(1)]
-    # Date
-    match = date_re.search(page)
-    if match:
-        result['dates'] = match.group(1).split('/')
-    # Director
-    match = director_re.search(page)
-    if match:
-        result['directors'] = match.group(1).split('/')
-    # Alternative names
-    match = alt_name_re.search(page)
-    if match:
-        result['alt_names'] = match.group(1).split('/')
-    # Summary
-    match = summary_re.search(page)
-    if match:
-        result['summary'] = match.group(1).replace('&nbsp;', ' ')
-    # Videos' urls
-    result['source'] = list_links(page, 'http://tv.sohu.com/2')
+def load_item_cb(page, result):
+    videos = json.loads(page)['data']['videos']
+    srcs = []
+    for i in videos:
+        srcs.append(i['video_name'])
+        srcs.append(i['url_html5'])
+    result['source'] = srcs
     moonplayer.show_detail(result)
+    
