@@ -2,57 +2,21 @@
 # -*- coding: utf-8 -*-
 
 import moonplayer
-import re
-from HTMLParser import HTMLParser
-from moonplayer_utils import list_links
+import json
 
 res_name = 'Bilibili - Bangumi'
 
 tags = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 countries = ['All']
 
+appkey = '75cd10da32ffff6db8092783baaeafac23140b9fce0c8558' # Caught from bilibili's uwp client
+
 ## Explore
-class ExploreResultParser(HTMLParser):
-    def __init__(self):
-        HTMLParser.__init__(self)
-        self.result = [[], [], [], [], [], [], []]
-        self.in_valid_link = False
-        self.urls = []
-
-    def handle_starttag(self, tag, attrs):
-        attrs = {k:v for (k, v) in attrs}
-        # Get the current day
-        if tag == 'span' and 'class' in attrs and 'week-day-' in attrs['class']:
-            self.day = int(attrs['class'].split('-')[-1])
-        # Append a new item
-        elif tag == 'a' and 'href' in attrs and 'bangumi.bilibili.com/anime' in attrs['href'] and 'class' in attrs:
-            name = attrs['title']
-            url = attrs['href']
-            if url.startswith('//'):
-                url = 'http:' + url
-            if not url in self.urls:
-                self.in_valid_link = True
-                self.result[self.day].append({'name': name, 'url': url})
-        # Add preview image
-        elif self.in_valid_link and tag == 'img':
-            url = attrs['src']
-            if url.startswith('//'):
-                url = 'http:' + url
-            self.result[self.day][-1]['pic_url'] = url
-
-    def handle_endtag(self, tag):
-        if self.in_valid_link and tag == 'a':
-            self.in_valid_link = False
-            if 'pic_url' in self.result[self.day][-1]: # Add an item successfully
-                self.urls.append(self.result[self.day][-1]['url'])
-            else:
-                del self.result[self.day][-1]
-
 bangumi_list = None
 
 def explore(tag, country, page):
     if bangumi_list == None:
-        url = 'http://bangumi.bilibili.com/anime/timeline'
+        url = 'http://bangumi.bilibili.com/jsonp/timeline_v2?appkey=' + appkey
         moonplayer.download_page(url, explore_cb, tag)
     else:
         result = bangumi_list[tags.index(tag)]
@@ -60,75 +24,52 @@ def explore(tag, country, page):
 
 def explore_cb(content, tag):
     global bangumi_list
-    parser = ExploreResultParser()
-    parser.feed(content.decode('UTF-8'))
-    bangumi_list = parser.result
+    bangumi_list = [[], [], [], [], [], [], []]
+    items = json.loads(content)['list']
+    for item in items:
+        day = item['weekday']
+        bangumi_list[day].append({'name': item['title'], 'url': item['url'], 'pic_url': item['cover']})
     result = bangumi_list[tags.index(tag)]
     moonplayer.res_show(result)
 
 
 ## Search
-class SearchResultParser(HTMLParser):
-    def __init__(self):
-        HTMLParser.__init__(self)
-        self.result = []
-        self.left_img_div = False
-
-    def handle_starttag(self, tag, attrs):
-        attrs = {k:v for (k, v) in attrs}
-        if tag == 'div' and 'class' in attrs and attrs['class'] == 'left-img':
-            self.left_img_div = True
-        elif self.left_img_div and tag == 'a' and 'bangumi.bilibili.com' in attrs['href']:
-            name = attrs['title']
-            url = attrs['href']
-            if url.startswith('//'):
-                url = 'http:' + url
-            self.result.append({'name': name, 'url': url, 'pic_url': ''})
-        elif self.left_img_div and tag == 'img':
-            url = attrs['src']
-            if url.startswith('//'):
-                url = 'http:' + url
-            self.result[-1]['pic_url'] = url
-
-    def handle_endtag(self, tag):
-        if self.left_img_div and tag == 'div':
-            self.left_img_div = False
-
 def search(key, page):
-    key = key.replace(' ', '%20')
-    url = 'http://search.bilibili.com/all?keyword=' + key
+    url = 'http://app.bilibili.com/x/v2/search/type?pn=1&ps=20&type=1&keyword=' + key
     moonplayer.download_page(url, search_cb, None)
 
 def search_cb(content, data):
-    parser = SearchResultParser()
-    parser.feed(content)
-    moonplayer.res_show(parser.result)
+    items = json.loads(content)['data']['items']
+    result = [{'name': i['title'], 'url': i['uri'], 'pic_url': i['cover']} for i in items]
+    moonplayer.res_show(result)
 
 
 ## Load item
 def load_item(url):
+    if url.startswith('bilibili://bangumi/season/'):
+        season = url.replace('bilibili://bangumi/season/', '')
+    elif url.startswith('/bangumi/i/'):
+        season = url.replace('/bangumi/i/', '')
+    if season.endswith('/'):
+        season = season[:-1]
+    url = 'http://bangumi.bilibili.com/jsonp/seasoninfo/%s.ver?jsonp=jsonp' % season
     moonplayer.download_page(url, load_item_cb, None)
-
-name_re = re.compile(r'''<meta property="og:title" content="(.+?)">''')
-summary_re = re.compile(r'''<div class="info-desc">([^<]+?)</div>''')
-image_re = re.compile(r'''<div class="bangumi-preview">\s*<img src="(.+?)"''')
+    
 def load_item_cb(content, data):
-    result = {}
-    match = name_re.search(content)
-    if match:
-        result['name'] = match.group(1)
-    match = summary_re.search(content)
-    if match:
-        result['summary'] = match.group(1)
-    match = image_re.search(content)
-    if match:
-        image = match.group(1)
-        if image.startswith('//'):
-            image = "http:" + image
-        result['image'] = image
-    # Get sources
-    srcs = list_links(content, '//bangumi.bilibili.com/anime')
-    for i in xrange(1, len(srcs), 2):
-        srcs[i] = 'http:' + srcs[i]
-    result['source'] = srcs
+    if content.startswith('seasonListCallback('):
+        content = content.replace('seasonListCallback(', '')[:-2]
+    data = json.loads(content)['result']
+    srcs = []
+    for item in data['episodes']:
+        name = '[%s] %s' % (item['index'], item['index_title'])
+        srcs.append(name)
+        srcs.append(item['webplay_url'])
+    result = {
+        'name': data['bangumi_title'],
+        'image': data['cover'],
+        'summary': data['evaluate'],
+        'players': [i['actor'] for i in data['actor']],
+        'source': srcs
+    }
     moonplayer.show_detail(result)
+        
