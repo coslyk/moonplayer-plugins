@@ -4,6 +4,7 @@
 import moonplayer
 import json
 
+
 res_name = 'Bilibili - Bangumi'
 
 tags = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
@@ -26,9 +27,16 @@ def explore_cb(content, tag):
     global bangumi_list
     bangumi_list = [[], [], [], [], [], [], []]
     items = json.loads(content)['list']
+    try:
+        if items[0]['cover'].startswith('//'):
+            pr = 'http:'
+        else:
+            pr = ''
+    except:
+        pr = ''
     for item in items:
         day = item['weekday']
-        bangumi_list[day].append({'name': item['title'], 'url': item['url'], 'pic_url': item['cover']})
+        bangumi_list[day].append({'name': item['title'], 'url': item['url'], 'pic_url': pr + item['cover']})
     result = bangumi_list[tags.index(tag)]
     moonplayer.res_show(result)
 
@@ -40,7 +48,14 @@ def search(key, page):
 
 def search_cb(content, data):
     items = json.loads(content)['data']['items']
-    result = [{'name': i['title'], 'url': i['uri'], 'pic_url': i['cover']} for i in items]
+    try:
+        if items[0]['cover'].startswith('//'):
+            pr = 'http:'
+        else:
+            pr = ''
+    except:
+        pr = ''
+    result = [{'name': i['title'], 'url': i['uri'], 'pic_url': pr + i['cover']} for i in items]
     moonplayer.res_show(result)
 
 
