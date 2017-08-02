@@ -13,7 +13,7 @@ Usage
 Supported websites
 ----
 * Sohu TV [(res_sohu_tv.py)](https://github.com/coslyk/moonplayer-plugins/raw/master/res_sohu_tv.py) Updated in Feb. 25th, 2017
-* Bilibili [(res_bilibili.py)](https://github.com/coslyk/moonplayer-plugins/raw/master/res_bilibili.py) Updated in Mar. 18th, 2017
+* Bilibili [(res_bilibili.py)](https://github.com/coslyk/moonplayer-plugins/raw/master/res_bilibili.py) Updated in Aug. 2nd, 2017
 
 For developers
 ----
@@ -36,7 +36,7 @@ MoonPlayer的插件
 已支持网站
 ----
 * 搜狐电视剧 [(res_sohu_tv.py)](https://github.com/coslyk/moonplayer-plugins/raw/master/res_sohu_tv.py) 最后更新：2017.02.25
-* B站新番 [(res_bilibili.py)](https://github.com/coslyk/moonplayer-plugins/raw/master/res_bilibili.py) 最后更新：2017.08.03
+* B站新番 [(res_bilibili.py)](https://github.com/coslyk/moonplayer-plugins/raw/master/res_bilibili.py) 最后更新：2017.08.02
 
 对于开发者
 ----
