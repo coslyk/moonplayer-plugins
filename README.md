@@ -36,7 +36,7 @@ MoonPlayer的插件
 已支持网站
 ----
 * 搜狐电视剧 [(res_sohu_tv.py)](https://github.com/coslyk/moonplayer-plugins/raw/master/res_sohu_tv.py) 最后更新：2017.02.25
-* B站新番 [(res_bilibili.py)](https://github.com/coslyk/moonplayer-plugins/raw/master/res_bilibili.py) 最后更新：2017.07.28
+* B站新番 [(res_bilibili.py)](https://github.com/coslyk/moonplayer-plugins/raw/master/res_bilibili.py) 最后更新：2017.08.03
 
 对于开发者
 ----

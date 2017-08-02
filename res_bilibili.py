@@ -3,7 +3,7 @@
 
 import moonplayer
 import json
-
+import time
 
 res_name = 'Bilibili - Bangumi'
 
@@ -60,6 +60,9 @@ def search_cb(content, data):
 
 
 ## Load item
+def test():
+    moonplayer.warn('Hello')
+
 def load_item(url):
     if url.startswith('bilibili://bangumi/season/'):
         season = url.replace('bilibili://bangumi/season/', '')
@@ -67,7 +70,8 @@ def load_item(url):
         season = url.replace('/bangumi/i/', '')
     if season.endswith('/'):
         season = season[:-1]
-    url = 'http://bangumi.bilibili.com/jsonp/seasoninfo/%s.ver?jsonp=jsonp' % season
+    long_epoch = int(time.time() * 1000)
+    url = 'http://bangumi.bilibili.com/jsonp/seasoninfo/%s.ver?callback=seasonListCallback&jsonp=jsonp&_=%i' % (season, long_epoch)
     moonplayer.download_page(url, load_item_cb, None)
     
 def load_item_cb(content, data):
@@ -79,6 +83,12 @@ def load_item_cb(content, data):
         name = '[%s] %s' % (item['index'], item['index_title'])
         srcs.append(name)
         srcs.append(item['webplay_url'])
+    try:
+        for season in data['seasons']:
+            srcs.append(season['title'])
+            srcs.append('python:res_bilibili.load_item("bilibili://bangumi/season/%s")' % season['season_id'])
+    except KeyError:
+        pass
     result = {
         'name': data['bangumi_title'],
         'image': data['cover'],
