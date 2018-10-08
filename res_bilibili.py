@@ -43,7 +43,7 @@ def explore_cb(content, tag):
 
 ## Search
 def search(key, page):
-    url = 'http://app.bilibili.com/x/v2/search/type?pn=1&ps=20&type=1&keyword=' + key
+    url = 'http://app.bilibili.com/x/v2/search/type?pn=1&ps=20&type=1&build=10040700&keyword=' + key
     moonplayer.download_page(url, search_cb, None)
 
 def search_cb(content, data):
@@ -68,6 +68,11 @@ def load_item(url):
         season = url.replace('bilibili://bangumi/season/', '')
     elif url.startswith('/bangumi/i/'):
         season = url.replace('/bangumi/i/', '')
+    elif '/anime/' in url:
+        season = url.split('/anime/')[1]
+    else:
+        moonplayer.warn('Bilibili: Cannot open url:' + url)
+        return
     if season.endswith('/'):
         season = season[:-1]
     long_epoch = int(time.time() * 1000)
@@ -82,7 +87,10 @@ def load_item_cb(content, data):
     for item in data['episodes']:
         name = '[%s] %s' % (item['index'], item['index_title'])
         srcs.append(name)
-        srcs.append(item['webplay_url'])
+        if 'av_id' in item:
+            srcs.append('https://www.bilibili.com/video/av%s/' % item['av_id'])
+        else:
+            srcs.append(item['webplay_url'])
     try:
         for season in data['seasons']:
             srcs.append(season['title'])
