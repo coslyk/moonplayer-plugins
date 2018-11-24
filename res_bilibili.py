@@ -3,14 +3,16 @@
 
 import moonplayer
 import json
-import time
+import re
 
 res_name = 'Bilibili - Bangumi'
 
 tags = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 countries = ['All']
 
-appkey = '75cd10da32ffff6db8092783baaeafac23140b9fce0c8558' # Caught from bilibili's uwp client
+#appkey = '75cd10da32ffff6db8092783baaeafac23140b9fce0c8558'
+appkey = '75cd10da32ffff6d39eb427d211acdcaca03a6866000e771' # Caught from bilibili's uwp client
+appkey_short = '75cd10da32ffff6d'
 
 ## Explore
 bangumi_list = None
@@ -43,7 +45,7 @@ def explore_cb(content, tag):
 
 ## Search
 def search(key, page):
-    url = 'http://app.bilibili.com/x/v2/search/type?pn=1&ps=20&type=1&build=10040700&keyword=' + key
+    url = 'http://app.bilibili.com/x/v2/search/type?pn=1&ps=20&type=1&build=10110100&keyword=' + key
     moonplayer.download_page(url, search_cb, None)
 
 def search_cb(content, data):
@@ -75,33 +77,39 @@ def load_item(url):
         return
     if season.endswith('/'):
         season = season[:-1]
-    long_epoch = int(time.time() * 1000)
-    url = 'http://bangumi.bilibili.com/jsonp/seasoninfo/%s.ver?callback=seasonListCallback&jsonp=jsonp&_=%i' % (season, long_epoch)
+    url = 'https://www.bilibili.com/bangumi/play/ss' + season
     moonplayer.download_page(url, load_item_cb, None)
-    
+
+info_re = re.compile(r'"mediaInfo":{.*?"actors":"(.+?)".*?"cover":"(.+?)".*?"evaluate":"(.+?)".*?"title":"(.+?)"')
+srcs_re = re.compile(r'"epList":(\[.+?\])')
 def load_item_cb(content, data):
-    if content.startswith('seasonListCallback('):
-        content = content.replace('seasonListCallback(', '')[:-2]
-    data = json.loads(content)['result']
+    # Infos
+    match = info_re.search(content)
+    if not match:
+        moonplayer.warn('Bilibili: Fails to get bangumi info!')
+        return
+    actors, cover, summary, title = match.group(1, 2, 3, 4)
+    actors = actors.split(r'\n')
+    cover = cover.replace('\u002F', '/')
+
+    # Urls
+    match = srcs_re.search(content)
+    if not match:
+        moonplayer.warn('Bilibili: Parsing fails!')
+        return
+    data = json.loads(match.group(1))
     srcs = []
-    for item in data['episodes']:
+    for item in data:
         name = '[%s] %s' % (item['index'], item['index_title'])
+        url = 'https://www.bilibili.com/bangumi/play/ep' + str(item['ep_id'])
         srcs.append(name)
-        if 'av_id' in item:
-            srcs.append('https://www.bilibili.com/video/av%s/' % item['av_id'])
-        else:
-            srcs.append(item['webplay_url'])
-    try:
-        for season in data['seasons']:
-            srcs.append(season['title'])
-            srcs.append('python:res_bilibili.load_item("bilibili://bangumi/season/%s")' % season['season_id'])
-    except KeyError:
-        pass
+        srcs.append(url)
+
     result = {
-        'name': data['bangumi_title'],
-        'image': data['cover'],
-        'summary': data['evaluate'],
-        'players': [i['actor'] for i in data['actor']],
+        'name': title,
+        'image': cover,
+        'summary': summary,
+        'players': actors,
         'source': srcs
     }
     moonplayer.show_detail(result)

@@ -13,7 +13,7 @@ Usage
 Supported websites
 ----
 * Sohu TV [(res_sohu_tv.py)](https://github.com/coslyk/moonplayer-plugins/raw/master/res_sohu_tv.py) Updated in Feb. 25th, 2017
-* Bilibili [(res_bilibili.py)](https://github.com/coslyk/moonplayer-plugins/raw/master/res_bilibili.py) Updated in Aug. 2nd, 2017
+* Bilibili [(res_bilibili.py)](https://github.com/coslyk/moonplayer-plugins/raw/master/res_bilibili.py) Updated in Nov. 24th, 2018
 
 For developers
 ----
