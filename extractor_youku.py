@@ -2,8 +2,8 @@
 
 import json
 
-# Extractor version
-extractor_version = 1
+# Supported hosts
+supported_hosts = ('v.youku.com',)
 
 # Catch this url
 url_pattern = r'.+?acs\.youku\.com/h5/mtop\.youku\.play\.ups\.appinfo\.get.+ckey.+'
