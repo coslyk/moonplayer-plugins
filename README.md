@@ -2,18 +2,22 @@ MoonPlayer plugins
 ==========
 Plugins used in MoonPlayer.
 
+Description
+----
+There are 2 types of plugins:
+1. Resources plugin - to show video list in the MoonPlayer's Explore window.
+1. Parser plugin - to parse video's real URL.
+
 Usage
 ----
-1. Download the plugin.
-1. MoonPlayer - Settings - Plugins, click "Open plugins folder"
-1. Drag the plugin into the opened folder.
-1. Restart MoonPlayer.
+Right click in MoonPlayer window, and click "Upgrade parsers". Plugins will be automatically downloaded / upgraded.
 
-
-Supported websites
+Supported video websites
 ----
-* Sohu TV [(res_sohu_tv.py)](https://github.com/coslyk/moonplayer-plugins/raw/master/res_sohu_tv.py) Updated in Feb. 25th, 2017
-* Bilibili [(res_bilibili.py)](https://github.com/coslyk/moonplayer-plugins/raw/master/res_bilibili.py) Updated in Nov. 24th, 2018
+* Sohu TV
+* Bilibili
+* Youtube
+* Youku
 
 For developers
 ----
@@ -25,18 +29,23 @@ MoonPlayer的插件
 ==========
 提供给MoonPlayer使用的插件。
 
+说明
+----
+有两种类型的插件，分别是：
+1. 资源插件 - 提供在MoonPlayer的“发现”窗口中的视频列表
+1. 解析插件 - 用于解析出视频的URL
+
 使用方法
 ----
-1. 下载插件。
-1. MoonPlayer - 设置 - 插件，点击“打开插件文件夹”
-1. 把插件拖进去
-1. 重启MoonPlayer
+在MoonPlayer的右键菜单中选择“更新解析程序”，插件会被自动下载/更新。
 
 
 已支持网站
 ----
-* 搜狐电视剧 [(res_sohu_tv.py)](https://github.com/coslyk/moonplayer-plugins/raw/master/res_sohu_tv.py) 最后更新：2017.02.25
-* B站新番 [(res_bilibili.py)](https://github.com/coslyk/moonplayer-plugins/raw/master/res_bilibili.py) 最后更新：2017.08.02
+* 搜狐电视剧
+* B站新番
+* Youtube
+* 优酷
 
 对于开发者
 ----

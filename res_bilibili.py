@@ -80,17 +80,23 @@ def load_item(url):
     url = 'https://www.bilibili.com/bangumi/play/ss' + season
     moonplayer.download_page(url, load_item_cb, None)
 
-info_re = re.compile(r'"mediaInfo":{.*?"actors":"(.+?)".*?"cover":"(.+?)".*?"evaluate":"(.+?)".*?"title":"(.+?)"')
-srcs_re = re.compile(r'"epList":(\[.+?\])')
+title_re = re.compile(r'"mediaInfo":{.*?"title":"(.+?)"')
+summary_re = re.compile(r'"evaluate":"(.+?)"')
+cover_re = re.compile(r'"cover":"(.+?)"')
+srcs_re = re.compile(r'"epList":(\[.*?\])')
 def load_item_cb(content, data):
     # Infos
-    match = info_re.search(content)
-    if not match:
+    title_match = title_re.search(content)
+    summary_match = summary_re.search(content)
+    cover_match = cover_re.search(content)
+    if None in (title_match, summary_match, cover_match):
         moonplayer.warn('Bilibili: Fails to get bangumi info!')
         return
-    actors, cover, summary, title = match.group(1, 2, 3, 4)
-    actors = actors.split(r'\n')
-    cover = cover.replace('\u002F', '/')
+    title = title_match.group(1)
+    summary = summary_match.group(1)
+    cover = cover_match.group(1).decode('unicode-escape')
+    if not cover.startswith('http'):
+        cover = 'http:' + cover
 
     # Urls
     match = srcs_re.search(content)
@@ -109,7 +115,6 @@ def load_item_cb(content, data):
         'name': title,
         'image': cover,
         'summary': summary,
-        'players': actors,
         'source': srcs
     }
     moonplayer.show_detail(result)
