@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import json
+import moonplayer
 
 # Supported hosts
 supported_hosts = ('v.youku.com',)
@@ -29,5 +30,5 @@ def parse(data):
         'title': title,
         'streams': streams
     }
-    return result
+    moonplayer.finish_parsing(result)
 
