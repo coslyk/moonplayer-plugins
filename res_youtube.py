@@ -4,7 +4,10 @@
 import moonplayer
 import json
 import time
-from urllib import urlencode
+try:
+    from urllib.parse import urlencode
+except:
+    from urllib import urlencode
 
 res_name = 'Youtube'
 

@@ -14,6 +14,12 @@ countries = ['All']
 appkey = '75cd10da32ffff6d39eb427d211acdcaca03a6866000e771' # Caught from bilibili's uwp client
 appkey_short = '75cd10da32ffff6d'
 
+def unicode_escape(s):
+    try:  # py2
+        return s.decode('unicode-escape')
+    except:  # py3
+        return bytes(s, 'utf-8').decode('unicode-escape')
+
 ## Explore
 bangumi_list = None
 
@@ -94,7 +100,7 @@ def load_item_cb(content, data):
         return
     title = title_match.group(1)
     summary = summary_match.group(1)
-    cover = cover_match.group(1).decode('unicode-escape')
+    cover = unicode_escape(cover_match.group(1))
     if not cover.startswith('http'):
         cover = 'http:' + cover
 
@@ -106,8 +112,8 @@ def load_item_cb(content, data):
     data = json.loads(match.group(1))
     srcs = []
     for item in data:
-        name = '[%s] %s' % (item['index'], item['index_title'])
-        url = 'https://www.bilibili.com/bangumi/play/ep' + str(item['ep_id'])
+        name = '[%s] %s' % (item['title'], item['longTitle'])
+        url = 'https://www.bilibili.com/bangumi/play/ep' + str(item['id'])
         srcs.append(name)
         srcs.append(url)
 

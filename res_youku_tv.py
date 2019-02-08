@@ -2,7 +2,10 @@
 # -*- coding: utf-8 -*-
 
 from moonplayer_utils import list_links
-from HTMLParser import HTMLParser
+try:
+    from html.parser import HTMLParser
+except ModuleNotFoundError:
+    from HTMLParser import HTMLParser
 import moonplayer
 import re
 import json
@@ -94,7 +97,7 @@ def explore_cb(page, data):
         match = pic_re.search(page, match.end(0))
     # Read links, bind them with relative pic urls
     links = list_links(page, '//v.youku.com/v_show')
-    for i in xrange(0, len(links), 2):
+    for i in range(0, len(links), 2):
         name = links[i]
         url = 'http:' + links[i+1]
         try:
