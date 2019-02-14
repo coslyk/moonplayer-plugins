@@ -4,7 +4,7 @@
 from moonplayer_utils import list_links
 try:
     from html.parser import HTMLParser
-except ModuleNotFoundError:
+except:
     from HTMLParser import HTMLParser
 import moonplayer
 import re
