@@ -23,7 +23,9 @@ def search(key, page):
 
 def search_cb(content, data):
     parser = SearchResultParser()
-    parser.feed(content.decode('UTF-8'))
+    if hasattr(content, 'decode'):
+        content = content.decode('UTF-8')
+    parser.feed(content)
     moonplayer.res_show(parser.result)
     
 
@@ -79,33 +81,22 @@ class SearchResultParser(HTMLParser):
             
 
 ### Explore ###
-def explore(tag, country, page):
-    url = 'http://list.youku.com/category/show/c_97_g_%s_a_%s_s_1_d_2_p_%i.html' % (tag, country, page)
+def explore(tag, region, page):
+    url = 'https://list.youku.com/category/page?c=97&a=%s&s=1&d=1&g=%s&type=show&p=%i' % (region, tag, page)
     moonplayer.download_page(url, explore_cb, None)
     
-    
-pic_re = re.compile(r'''<img[^>]*? src="(.+?ykimg.+?)" alt="(.+?)"''')
 def explore_cb(page, data):
-    page = page.split('大家都在看')[0]
-    name2pic = {}
+    data = json.loads(page)['data']
     result = []
-    # Read all pic urls
-    match = pic_re.search(page)
-    while match:
-        url, name = match.group(1, 2)
-        name2pic[name] = url
-        match = pic_re.search(page, match.end(0))
-    # Read links, bind them with relative pic urls
-    links = list_links(page, '//v.youku.com/v_show')
-    for i in range(0, len(links), 2):
-        name = links[i]
-        url = 'http:' + links[i+1]
-        try:
-            result.append({'name': name,
-                           'url': url,
-                           'pic_url': name2pic[name]})
-        except KeyError:
-            pass
+    for item in data:
+        name = item['title']
+        url = item['videoLink']
+        pic_url = item['img']
+        if not url.startswith('http'):
+            url = 'http:' + url
+        if not pic_url.startswith('http'):
+            pic_url = 'http:' + pic_url
+        result.append({'name': name, 'url': url, 'pic_url': pic_url})
     moonplayer.res_show(result)
     
 

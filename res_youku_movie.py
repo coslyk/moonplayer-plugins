@@ -12,6 +12,6 @@ tags = ['', '武侠', '警匪', '犯罪', '科幻', '战争', '恐怖', '惊悚'
 countries = ['', '大陆', '香港', '台湾', '韩国', '日本', '美国', '法国', '英国', '德国',
              '意大利', '加拿大', '印度', '俄罗斯', '泰国', '其他']
 
-def explore(tag, country, page):
-    url = 'http://list.youku.com/category/show/c_96_g_%s_a_%s_s_1_d_2_p_%i.html' % (tag, country, page)
+def explore(tag, region, page):
+    url = 'https://list.youku.com/category/page?c=96&a=%s&g=%s&type=show&p=%i' % (region, tag, page)
     moonplayer.download_page(url, explore_cb, None)
