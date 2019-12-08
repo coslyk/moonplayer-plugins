@@ -1,4 +1,4 @@
-os: osx
+os: linux
 language: shell
 
 script:
