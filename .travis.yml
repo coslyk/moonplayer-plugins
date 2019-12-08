@@ -1,0 +1,14 @@
+os: osx
+language: python
+
+script:
+  - "./create-ykdl-unix.sh"
+
+deploy:
+  provider: releases
+  api_key:
+    secure: XTEwZToER9evCz4oA4rL3d4P2/mv0xlfNSNWqSmvay9XEfts7V807JCURwW1A1+gyX9a1A87JTk3JaRQRZ1zfULwBnvKzthuOx77L9rv+pPqrHY7Jgw5qLok7i7OduYlMNMfLXGiTfeY6xd5wbqAINBkDkupRNPQNDutKEZg7l8dV+w2mKI2M0sci0cFnzWz4txSOPYJ1GSwhwnYLtZixFjvjNsr4hHcRHuabRyANTbMt1VbSFP1N8+GK7rYGTMsajLoGLCaCMSCK9d/02RKONvo7wBYnxOkbbPsLP3v2hdYThssUko9dDyCHH1g+AJLYi8Q8HYntjmwpOnl6trKxjRNxT11mT96qyG8sh1+yjfvm16BhqZ4WNrpg8CIVik+pd7Ey5TPCmTOLi6T110RYxdZJZpNFKbdmEpWn7cVMGYBYTKwACiEIOG85gWwgBx3obeQ3zdfYhu4ljn9/hpgUxBzxj4H9ycryiP51CXDRxEEvBmvfQptpZDklahrhLiYsUAQ7PFI2MyvIpb/5CJYaPazEghrfFa8NQQXcGbKRRuhk7FKQOnWvhXoekBjYBOuRtaPd6Wwyr1ZKm4GhP+ejaaoE5QymB0SaJDpe5hj6vzmaNDr1FDo7TFV5pgqYVJWS8DUW7yqkdQKX3D8UHuBysPMzAQ/gAc3R/pUbID5Ggk=
+  file: ykdl-moonplayer
+  on:
+    repo: coslyk/moonplayer-plugins
+    branch: develop
