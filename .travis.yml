@@ -1,5 +1,5 @@
 os: osx
-language: python
+language: shell
 
 script:
   - "./create-ykdl-unix.sh"
