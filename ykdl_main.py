@@ -73,8 +73,10 @@ def check_support(url):
     try:
         import_module('.'.join(['ykdl','extractors', short_name]))
         print('Url is supported.')
-    except:
+        exit(0)
+    except ImportError:
         print('Url is not supported')
+        exit(1)
 
         
 def main():
