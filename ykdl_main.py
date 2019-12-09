@@ -52,7 +52,7 @@ except:
 
 def arg_parser():
     parser = ArgumentParser(description="Ykdl for MoonPlayer")
-    parser.add_argument('--check-support', type=str, help="Check if the URL is supported.")
+    parser.add_argument('--check-support', help="Check if the URL is supported.")
     parser.add_argument('--http-proxy', type=str, help="set proxy HOST:PORT for http(s) transfer. default: no proxy")
     parser.add_argument('--socks-proxy', type=str, help="set socks proxy HOST:PORT. default: no proxy")
     parser.add_argument('-t', '--timeout', type=int, default=60, help="set socket timeout seconds, default 60s")
@@ -81,12 +81,9 @@ def check_support(url):
         
 def main():
     args = arg_parser()
-    handlers = []
-    host_list = video_host.split('.')
-    if host_list[-2] in exclude_list:
-        short_name = host_list[-3]
-    else:
-        short_name = host_list[-2]
+    
+    if args.check_support:
+        return check_support(args.video_url)
 
     if args.timeout:
         socket.setdefaulttimeout(args.timeout)
