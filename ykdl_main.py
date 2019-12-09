@@ -7,6 +7,7 @@
 
 from __future__ import print_function
 import os, sys, json, platform, io
+from importlib import import_module
 from os.path import expanduser
 
 
@@ -36,7 +37,7 @@ VideoInfo.jsonlize = jsonlize
 
 
 # Run ykdl
-from ykdl.common import url_to_module
+from ykdl.common import url_to_module, alias, exclude_list
 from ykdl.compact import ProxyHandler, build_opener, install_opener
 from ykdl.util.html import fake_headers, get_content
 from ykdl.util.match import match1
@@ -51,6 +52,7 @@ except:
 
 def arg_parser():
     parser = ArgumentParser(description="Ykdl for MoonPlayer")
+    parser.add_argument('--check-support', type=str, help="Check if the URL is supported.")
     parser.add_argument('--http-proxy', type=str, help="set proxy HOST:PORT for http(s) transfer. default: no proxy")
     parser.add_argument('--socks-proxy', type=str, help="set socks proxy HOST:PORT. default: no proxy")
     parser.add_argument('-t', '--timeout', type=int, default=60, help="set socket timeout seconds, default 60s")
@@ -58,9 +60,33 @@ def arg_parser():
     parser.add_argument('video_url', type=str, help="video url")
     return parser.parse_args()
 
+
+def check_support(url):
+    video_host = url.split('/')[2]
+    host_list = video_host.split('.')
+    if host_list[-2] in exclude_list:
+        short_name = host_list[-3]
+    else:
+        short_name = host_list[-2]
+    if short_name in alias.keys():
+        short_name = alias[short_name]
+    try:
+        import_module('.'.join(['ykdl','extractors', short_name]))
+        print('Url is supported.')
+        exit(0)
+    except:
+        print('Url is not supported')
+        exit(1)
+
+        
 def main():
     args = arg_parser()
     handlers = []
+    host_list = video_host.split('.')
+    if host_list[-2] in exclude_list:
+        short_name = host_list[-3]
+    else:
+        short_name = host_list[-2]
 
     if args.timeout:
         socket.setdefaulttimeout(args.timeout)
