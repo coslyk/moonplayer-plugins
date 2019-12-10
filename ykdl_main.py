@@ -81,6 +81,7 @@ def check_support(url):
         
 def main():
     args = arg_parser()
+    handlers = []
     
     if args.check_support:
         return check_support(args.video_url)
