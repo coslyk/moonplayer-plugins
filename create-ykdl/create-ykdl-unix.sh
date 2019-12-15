@@ -1,5 +1,7 @@
 #!/bin/sh
 
+HERE="$(dirname "$(readlink -f "${0}")")"
+
 # Download latest ykdl code
 if [ -d ykdl ]; then
     rm -rf ykdl
@@ -7,7 +9,7 @@ fi
 git clone 'https://github.com/zhangn1985/ykdl.git'
 
 # Copy patched file
-cp ykdl_main.py ykdl/__main__.py
+cp "${HERE}/ykdl_main.py" ykdl/__main__.py
 
 # Compress to zip file
 cd ykdl
