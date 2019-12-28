@@ -37,3 +37,4 @@ deploy:
   on:
     repo: coslyk/moonplayer-plugins
     branch: develop
+    tags: true
