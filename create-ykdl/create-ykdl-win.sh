@@ -11,5 +11,5 @@ git clone 'https://github.com/zhangn1985/ykdl.git'
 # Run PyInstaller
 cp "${HERE}/ykdl_main.py" ykdl/ykdl-moonplayer.py
 cd ykdl
-pyinstaller -F --distpath .. ykdl-moonplayer.py
+pyinstaller -F --additional-hooks-dir $HERE/hooks --distpath .. ykdl-moonplayer.py
 cd ..
