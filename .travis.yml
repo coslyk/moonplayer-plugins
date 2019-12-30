@@ -5,7 +5,6 @@ env: PATH=/c/Python37:/c/Python37/Scripts:$PATH
 before_install:
   - choco install zip
   - choco install python --version 3.7.6
-  - pip install --upgrade pip
 
 install:
   - pip install pyinstaller
@@ -13,9 +12,7 @@ install:
 script:
   - create-ykdl/create-ykdl-unix.sh
   - create-ykdl/create-ykdl-win.sh
-  - cd plugins
-  - zip -q ../plugins *.js
-  - cd ..
+  - zip -q plugins *.js
 
 deploy:
   provider: releases
