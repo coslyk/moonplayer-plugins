@@ -1,28 +1,21 @@
-os: linux
+os: windows
 language: shell
-
-jobs:
-  include:
-    - name: Linux build
-      os: linux
-      
-    - name: Windows build
-      os: windows
-      env: PATH=/c/Python37:/c/Python37/Scripts:$PATH
+env: PATH=/c/Python37:/c/Python37/Scripts:$PATH
 
 before_install:
-  - if [ "$TRAVIS_OS_NAME" = "windows" ]; then choco install python --version 3.7.6; fi
-  - if [ "$TRAVIS_OS_NAME" = "windows" ]; then python -m pip install --upgrade pip; fi
+  - choco install zip
+  - choco install python --version 3.7.6
+  - pip install --upgrade pip
 
 install:
-  - if [ "$TRAVIS_OS_NAME" = "windows" ]; then pip install pyinstaller; fi
+  - pip install pyinstaller
 
 script:
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then create-ykdl/create-ykdl-unix.sh; fi
-  - if [ "$TRAVIS_OS_NAME" = "windows" ]; then create-ykdl/create-ykdl-win.sh; fi
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then cd plugins; fi
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then zip -q ../plugins *.js; fi
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then cd ..; fi
+  - create-ykdl/create-ykdl-unix.sh
+  - create-ykdl/create-ykdl-win.sh
+  - cd plugins
+  - zip -q ../plugins *.js
+  - cd ..
 
 deploy:
   provider: releases
@@ -37,4 +30,3 @@ deploy:
   on:
     repo: coslyk/moonplayer-plugins
     branch: develop
-    tags: true
