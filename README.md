@@ -26,29 +26,8 @@ var website_name = 'Youtube';
 
 
 // You need to define this function for video search
-function search(key, page) {
-
-    // You can use following APIs provided by moonplayer:
-    
-    // get_content() can be used to download data:
-    moonplayer.get_content(url, function(content){
-        // do something.
-        // "content" is the downloaded data.
-    });
-    
-    // post_content() can be used to upload data:
-    moonplayer.post_content(url, data, function(content){
-        // do something...
-        // "content" is the data returned by server.
-    });
-    
-    // warning() shows a warning dialog:
-    moonplayer.warning("Naive!");
-    
-    // question() shows a question dialog with yes/no button:
-    if (moonplayer.question("Are you ok?")) {
-        // do something...
-    }
+function search(keyword, page) {
+    do_something();
     
     // At least, you need to call show_result() to show the seach result on MoonPlayer:
     var result = [
@@ -58,3 +37,6 @@ function search(key, page) {
     moonplayer.show_result(result);
 }
 ```
+For details please visit [API Reference](https://github.com/coslyk/moonplayer-plugins/wiki/API-Reference).
+
+To publish your plugins, just make a pull request to this repository. Your plugins will be pushed to all MoonPlayer users.
