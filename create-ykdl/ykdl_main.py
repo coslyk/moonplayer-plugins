@@ -36,10 +36,31 @@ def jsonlize(self):
 VideoInfo.jsonlize = jsonlize
 
 
+# Patch iqiyi
+from ykdl.extractors.iqiyi.video import Iqiyi
+from ykdl.util.html import fake_headers, get_content
+from ykdl.util.match import matchall
+
+def remove_duplicates(seq):
+    seen = set()
+    seen_add = seen.add
+    return [x for x in seq if not (x in seen or seen_add(x))]
+
+def iqiyi_list_only(self):
+    return 'www.iqiyi.com/lib/' in self.url
+
+def iqiyi_prepare_list(self):
+    html = get_content(self.url)
+    urls = matchall(html, ['<a .*?title=".+?" .*?href="(http://www\.iqiyi\.com/v_.+?)"'])
+    return remove_duplicates(urls)
+
+Iqiyi.list_only = iqiyi_list_only
+Iqiyi.prepare_list = iqiyi_prepare_list
+
+
 # Run ykdl
 from ykdl.common import url_to_module, alias, exclude_list
 from ykdl.compact import ProxyHandler, build_opener, install_opener
-from ykdl.util.html import fake_headers, get_content
 from ykdl.util.match import match1
 from argparse import ArgumentParser
 import socket
