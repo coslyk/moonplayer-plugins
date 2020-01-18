@@ -2,6 +2,10 @@ os: windows
 language: shell
 env: PATH=/c/Python37:/c/Python37/Scripts:$PATH
 
+branches:
+  except:
+    - /^untagged/
+
 before_install:
   - choco install zip
   - choco install python --version 3.7.6
