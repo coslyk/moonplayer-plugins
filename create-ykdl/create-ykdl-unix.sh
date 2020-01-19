@@ -13,7 +13,7 @@ cp "${HERE}/ykdl_main.py" ykdl/__main__.py
 
 # Compress to zip file
 cd ykdl
-zip -q ../ykdl-moonplayer ykdl/*.py ykdl/*/*.py ykdl/*/*/*.py __main__.py
+zip -q ../ykdl-moonplayer ykdl/*.py ykdl/*/*.py ykdl/*/*/*.py ykdl/*/*/*.js __main__.py
 cd ..
 
 # Create standalone
