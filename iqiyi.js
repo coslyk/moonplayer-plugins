@@ -1,5 +1,5 @@
 
-var website_name = 'iqiyi';
+var website_name = 'Iqiyi';
 
 // Search
 function search(key, page) {
