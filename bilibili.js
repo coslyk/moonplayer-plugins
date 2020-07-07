@@ -1,7 +1,21 @@
 
 var website_name = 'Bilibili';
+var website_name_zh_CN = '哔哩哔哩';
 
 var website_description = '\
+    <p>Welcome to Bilibili!<p>\
+    <p>View the latest animes:</p>\
+    <p>\
+        <a href="plugin:bangumi-latest">New</a>&nbsp;\
+        <a href="plugin:bangumi-sun">Sun</a>&nbsp;\
+        <a href="plugin:bangumi-mon">Mon</a>&nbsp;\
+        <a href="plugin:bangumi-tue">Tue</a>&nbsp;\
+        <a href="plugin:bangumi-wed">Wed</a>&nbsp;\
+        <a href="plugin:bangumi-thu">Thu</a>&nbsp;\
+        <a href="plugin:bangumi-fri">Fri</a>&nbsp;\
+        <a href="plugin:bangumi-sat">Sat</a>&nbsp;\
+    </p>'
+var website_description_zh_CN = '\
     <p>哔哩哔哩 ~ 干杯！<p>\
     <p>浏览最新番剧：</p>\
     <p>\
