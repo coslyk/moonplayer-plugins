@@ -1,7 +1,20 @@
 
 var website_name = 'Youtube';
 
-var appkey = 'AIzaSyCIM4EzNqi1in22f4Z3Ru3iYvLaY8tc3bo';
+var website_description = '\
+    <p>Welcome to Youtube!<p>\
+    <p>\
+        Before using, you need to\
+        <a href="plugin:set-api-key">set Youtube API Key</a>\
+        first.\
+    </p>\
+    <p>\
+        <a href="https://www.slickremix.com/docs/get-api-key-for-youtube/">How to get the API Key?</a>\
+    </p>'
+
+    
+// Don't crash in old version
+var api_key = moonplayer.get_configuration !== undefined ? moonplayer.get_configuration('api_key') : undefined;
 var pageTokens = [];
 
 
@@ -15,13 +28,23 @@ function serialize(obj) {
 
 // Search
 function search(key, page) {
+    if (key === 'plugin:set-api-key') {
+        set_api_key();
+        return;
+    }
+
+    if (api_key === undefined) {
+        moonplayer.warning('Please set the API key first!');
+        return;
+    }
+
     var qs = {
         'q': key,
         'maxResults': 25,
         'safeSearch': 'none',
         'part': 'id,snippet',
         'type': 'video',
-        'key': appkey
+        'key': api_key
     };
     if (page === 1)
         pageTokens = ['', ''];
@@ -47,4 +70,18 @@ function search(key, page) {
             pageTokens.push(data.nextPageToken);
         moonplayer.show_result(result);
     });
+}
+
+// Set API key
+function set_api_key() {
+    if (api_key !== undefined) {
+        if (!moonplayer.question('API Key is already set. Do you want to reset it?')) {
+            return;
+        }
+    }
+    var new_key = moonplayer.get_text('Please enter a new API Key:');
+    if (new_key !== '') {
+        api_key = new_key;
+        moonplayer.set_configuration('api_key', api_key);
+    }
 }
