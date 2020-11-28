@@ -13,8 +13,7 @@ var website_description = '\
     </p>'
 
     
-// Don't crash in old version
-var api_key = moonplayer.get_configuration !== undefined ? moonplayer.get_configuration('api_key') : undefined;
+var api_key = moonplayer.get_configuration('api_key');
 var pageTokens = [];
 
 
@@ -74,14 +73,9 @@ function search(key, page) {
 
 // Set API key
 function set_api_key() {
-    if (api_key !== undefined) {
-        if (!moonplayer.question('API Key is already set. Do you want to reset it?')) {
-            return;
-        }
-    }
-    var new_key = moonplayer.get_text('Please enter a new API Key:');
-    if (new_key !== '') {
-        api_key = new_key;
+    moonplayer.get_text('Please enter a new API Key:', api_key, function(text) {
+        api_key = text;
         moonplayer.set_configuration('api_key', api_key);
-    }
+        moonplayer.information('Successfully set the API Key.');
+    });
 }
