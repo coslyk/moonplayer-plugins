@@ -1,0 +1,45 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+# This workflow will install Deno then run Deno lint and test.
+# For more information see: https://github.com/denoland/setup-deno
+
+name: Build
+
+on:
+  push:
+    branches: [develop]
+
+jobs:
+  build:
+    runs-on: windows-2019
+
+    steps:
+      - name: Setup repo
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: pip install pyinstaller
+
+      - name: Build unix executable
+        shell: bash
+        run: create-ykdl/create-ykdl-unix.sh
+        
+      - name: Build windows executable
+        shell: bash
+        run: create-ykdl/create-ykdl-win.sh
+        
+      - name: Zip plugins
+        run: zip -q plugins *.js
+
+      - name: Upload files
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+          export UPLOADTOOL_SUFFIX=`date "+%Y-%m-%d"`
+          curl -Lo upload.sh https://github.com/probonopd/uploadtool/raw/master/upload.sh
+          bash upload.sh ykdl-moonplayer ykdl-moonplayer.exe plugins.zip
