@@ -11,6 +11,8 @@ name: Build
 on:
   push:
     branches: [develop]
+  schedule:
+    - cron: '30 2 * * 0'
 
 jobs:
   build:
